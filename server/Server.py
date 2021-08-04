@@ -20,7 +20,6 @@ elif platform == 'Linux':
 HEADER = 64
 PORT = 5050
 SERVER = socket.gethostbyname(socket.gethostname())
-print(SERVER)
 ADDR = (SERVER, PORT)
 FORMAT = 'utf-8'
 DISCONNECT_MESSAGE = '!l'
@@ -30,12 +29,12 @@ server.bind(ADDR)
 
 
 def login(name, fname, psw):
-    
+
     pass
 
 
 def handle_client(conn, addr):
-    print(f'[NEW CONNECTION] {addr} connected.\n')
+    print(f'\u001b[32m[NEW CONNECTION]\u001b[0m {addr} connected.\n')
 
     connected = True
     data = []
@@ -57,7 +56,7 @@ def handle_client(conn, addr):
 
 def start():
     server.listen()
-    print(f'[LISTENING] Server is listening to {SERVER}')
+    print(f'\u001b[34m[LISTENING]\u001b[0m Server is listening to {SERVER}')
     while True:
         conn, addr = server.accept()
         thread = threading.Thread(target=handle_client, args=(conn, addr))
@@ -65,5 +64,5 @@ def start():
         print(f'[ACTIVE CONNECTIONS] {threading.activeCount() - 1}')
 
 
-print('[STARTING] server is starting...')
+print('\u001b[32m[STARTING]\u001b[0m server is starting...')
 start()
