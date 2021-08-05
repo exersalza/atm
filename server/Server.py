@@ -2,6 +2,7 @@ import socket
 import threading
 import os
 import platform
+import bcrypt
 
 from sql.sql_conn import mydb
 
@@ -28,11 +29,6 @@ server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind(ADDR)
 
 
-def login(name, fname, psw):
-
-    pass
-
-
 def handle_client(conn, addr):
     print(f'\u001b[32m[NEW CONNECTION]\u001b[0m {addr} connected.\n')
 
@@ -47,11 +43,13 @@ def handle_client(conn, addr):
             if msg == DISCONNECT_MESSAGE:
                 connected = False
                 data.clear()
+                threading.activeCount() - 1
             else:
-                data.append(msg)
+                for x in msg:
+                    data.append(x)
 
-            print(f'[{addr}] {msg}, {data}')
-            conn.send('Msg received'.encode(FORMAT))
+            login(data[0], data[1])
+            conn.send('logged in'.encode(FORMAT))
 
 
 def start():

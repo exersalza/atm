@@ -1,28 +1,62 @@
-line1 = '██╗  ██╗███████╗███╗   ██╗███████╗██╗  ██╗ █████╗ ██████╗ '
-line2 = '██║ ██╔╝██╔════╝████╗  ██║██╔════╝╚██╗██╔╝██╔══██╗██╔══██╗'
-line3 = '█████╔╝ █████╗  ██╔██╗ ██║█████╗   ╚███╔╝ ███████║██████╔╝'
-line4 = '██╔═██╗ ██╔══╝  ██║╚██╗██║██╔══╝   ██╔██╗ ██╔══██║██╔══██╗'
-line5 = '██║  ██╗███████╗██║ ╚████║███████╗██╔╝ ██╗██║  ██║██║  ██║'
-line6 = '╚═╝  ╚═╝╚══════╝╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝'
+import socket
+import threading
+import os
+import platform
 
-line_array = [line1, line2, line3, line4, line5, line6]
+from sql.sql_conn import mydb
 
-foo = []
+## CURSOR ##
+cursor = mydb.cursor()
 
-## \u001b[38;5;88m
+platform = platform.system()
 
-red_pallet = ['\u001b[38;5;52m', '\u001b[38;5;88m', '\u001b[38;5;124m', '\u001b[38;5;160m', '\u001b[38;5;196m']
+if platform == 'Windows':
+    clear = lambda: os.system('cls')
+    clear()
+elif platform == 'Linux':
+    clear = lambda: os.system('clear')
+    clear()
 
-white_pallet = ['\u001b[38;5;249m', '\u001b[38;5;248m', '\u001b[38;5;247m', '\u001b[38;5;246m', '\u001b[38;5;245m', '\u001b[38;5;244m']
+HEADER = 64
+PORT = 5050
+SERVER = socket.gethostbyname(socket.gethostname())
+ADDR = (SERVER, PORT)
+FORMAT = 'utf-8'
+DISCONNECT_MESSAGE = '!l'
+
+server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server.bind(ADDR)
 
 
-for i in line1:
-    # for x in i:
-    if '█' in i:
-        bar = '\\' + 'e[38;5;196m' + i
-        print(bar)
-        foo.append(bar)
-    else:
-        foo.append(i)
+def handle_client(conn, addr):
+    print(f'\u001b[32m[NEW CONNECTION]\u001b[0m {addr} connected.\n')
 
-print(foo)
+    connected = True
+    data = []
+    while connected:
+        msg_length = conn.recv(HEADER).decode(FORMAT)
+        if msg_length:
+            msg_length = int(msg_length)
+            msg = conn.recv(msg_length).decode(FORMAT)
+
+            if msg == DISCONNECT_MESSAGE:
+                connected = False
+                print(f'\u001b[31mCONNECTION CLOSED]\u001b[0m {addr} closed the connection.')
+                data.clear()
+                threading.activeCount() - 1
+            else:
+                conn.send(f'Msg rec: {msg}'.encode(FORMAT))
+
+
+def start():
+    server.listen()
+    print(f'\u001b[34m[LISTENING]\u001b[0m Server is listening to {SERVER}')
+    while True:
+        conn, addr = server.accept()
+        thread = threading.Thread(target=handle_client, args=(conn, addr))
+        thread.start()
+        print(f'[ACTIVE CONNECTIONS] {threading.activeCount() - 1}')
+
+
+print('\u001b[32m[STARTING]\u001b[0m server is starting...')
+start()

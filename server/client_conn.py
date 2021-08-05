@@ -2,13 +2,13 @@ import socket
 
 HEADER = 64
 PORT = 5050
-SERVER = '192.168.56.1'
+SERVER = '127.0.1.1'
 ADDR = (SERVER, PORT)
 FORMAT = 'utf-8'
 DISCONNECT_MESSAGE = '!l'
 
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client.connect(ADDR)
+conn = client.connect(ADDR)
 
 
 def send(msg):
