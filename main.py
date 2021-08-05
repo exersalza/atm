@@ -39,12 +39,13 @@ def register(username, password):
 
 
 def login(username, password):
-    global usr_name, psw
-    cursor.execute(f"SELECT * FROM login_db WHERE username={username}")
+    global usr_name, psw, form
+    cursor.execute(f"SELECT * FROM login_db WHERE username='{username}'")
     data = cursor.fetchone()
     check_psw = str.encode(password)
     if bcrypt.checkpw(check_psw, data[2].encode('utf-8')):
         print('redirect to interface')
+        form = False
     else:
         print('Password or Username are incorrect!')
         usr_name = input("Username: ")
