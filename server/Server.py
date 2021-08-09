@@ -44,12 +44,12 @@ def handle_client(conn, addr):
                 connected = False
                 data.clear()
                 threading.activeCount() - 1
-            else:
-                for x in msg:
-                    data.append(x)
 
-            login(data[0], data[1])
-            conn.send('logged in'.encode(FORMAT))
+                print(f'\u001b[31m[CLOSED CONNECTION]\u001b[0m {addr} disconnected.')
+            elif msg == 'login_redirect':
+                conn.send('logged in'.encode(FORMAT))
+            elif msg == 'register_redirect':
+                conn.send('registered'.encode(FORMAT))
 
 
 def start():

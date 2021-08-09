@@ -1,7 +1,7 @@
 import time
 import bcrypt
 
-from server.client_conn import send
+from server.client_conn import send, client
 from server.sql.sql_conn import mydb
 
 
@@ -15,7 +15,7 @@ cursor = mydb.cursor(buffered=True)
 form = True
 
 ## LOGIN PREPARE ## how does the computer scientist duck? NAT NAT NAT :)
-mod = input('What do you want to do?: login/register ')
+mod = input('What do you want to do?: login/register ').lower()
 
 
 def form():
@@ -35,6 +35,10 @@ def register(username, password):
         hashed_password = str(hashed_password).strip("b '")
         cursor.execute(f"INSERT INTO login_db (username, password) VALUES ('{str(username)}', '{hashed_password}')")
         form = False
+
+        msg = client.recv(1024)
+        print(msg.decode("utf-8"))
+
         return mydb.commit()
 
 
@@ -45,6 +49,8 @@ def login(username, password):
     check_psw = str.encode(password)
     if bcrypt.checkpw(check_psw, data[2].encode('utf-8')):
         print('redirect to interface')
+        send('login_redirect')
+
         form = False
     else:
         print('Password or Username are incorrect!')
@@ -58,14 +64,19 @@ def login(username, password):
 
 try:
     while form:
-        usr_name = input("Username: ")
-        psw = input('Password: ')
-
         if mod == 'login':
+            usr_name = input("Username: ")
+            psw = input('Password: ')
+
             login(usr_name, psw)
         elif mod == 'register':
-            register(usr_name, psw)
+            usr_name = input("Username: ")
+            psw = input('Password: ')
 
+            register(usr_name, psw)
+        else:
+            send('!l')
+            form = False
 
 except Exception:
     send('!l')
