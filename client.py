@@ -6,13 +6,13 @@ from server.sql.sql_conn import mydb
 
 
 # todo:
-#   login knallen
+#
 
 ## CURSOR / VAR ##
 
 cursor = mydb.cursor(buffered=True)
 
-form = True
+f = True
 
 ## LOGIN PREPARE ## how does the computer scientist duck? NAT NAT NAT :)
 mod = input('What do you want to do?: login/register ').lower()
@@ -25,16 +25,16 @@ def form():
 
 
 def register(username, password):
-    global psw, usr_name, form
+    global psw, usr_name, f
     # print(cursor.execute(f"SELECT * FROM login_db WHERE username='{username}'"))
 
-    if cursor.execute(f"SELECT * FROM login_db WHERE username='{username}'"):
+    if cursor.execute(f"SELECT * FROM main_db WHERE username='{username}'"):
         print('cocks')
     else:
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
         hashed_password = str(hashed_password).strip("b '")
-        cursor.execute(f"INSERT INTO login_db (username, password) VALUES ('{str(username)}', '{hashed_password}')")
-        form = False
+        cursor.execute(f"INSERT INTO main_db (username, password) VALUES ('{str(username)}', '{hashed_password}')")
+        f = False
 
         msg = client.recv(1024)
         print(msg.decode("utf-8"))
@@ -43,15 +43,17 @@ def register(username, password):
 
 
 def login(username, password):
-    global usr_name, psw, form
-    cursor.execute(f"SELECT * FROM login_db WHERE username='{username}'")
+    global usr_name, psw, f
+    cursor.execute(f"SELECT * FROM main_db WHERE username='{username}'")
     data = cursor.fetchone()
     check_psw = str.encode(password)
     if bcrypt.checkpw(check_psw, data[2].encode('utf-8')):
-        print('redirect to interface')
         send('login_redirect')
 
-        form = False
+        msg = client.recv(1024)
+        print(msg.decode("utf-8"))
+
+        f = False
     else:
         print('Password or Username are incorrect!')
         usr_name = input("Username: ")
@@ -63,7 +65,7 @@ def login(username, password):
 ## LOGIN / REGISTER ##
 
 try:
-    while form:
+    while f:
         if mod == 'login':
             usr_name = input("Username: ")
             psw = input('Password: ')
@@ -75,8 +77,9 @@ try:
 
             register(usr_name, psw)
         else:
+            print('Enter a Valid value: login or register')
             send('!l')
-            form = False
+            f = False
 
 except Exception:
     send('!l')
