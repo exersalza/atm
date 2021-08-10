@@ -6,7 +6,7 @@ from server.sql.sql_conn import mydb
 
 
 # todo:
-#
+#   login if exit then fuckle oyu
 
 ## CURSOR / VAR ##
 
