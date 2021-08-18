@@ -33,13 +33,17 @@ def register(username, password):
     else:
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
         hashed_password = str(hashed_password).strip("b '")
-        cursor.execute(f"INSERT INTO main_db (username, password) VALUES ('{str(username)}', '{hashed_password}')")
+        cursor.execute(f"INSERT INTO main_db (username, password) VALUES (?, '{hashed_password}')", username)
         f = False
+
+        send('register_redirect')
 
         msg = client.recv(1024)
         print(msg.decode("utf-8"))
 
-        return mydb.commit()
+        mydb.commit()
+
+        return send('!l')
 
 
 def login(username, password):
@@ -68,18 +72,37 @@ try:
     while f:
         if mod == 'login':
             usr_name = input("Username: ")
-            psw = input('Password: ')
 
-            login(usr_name, psw)
+            if usr_name == 'exit':
+                f = False
+                print('Exited')
+            else:
+                psw = input('Password: ')
+
+                if psw == 'exit':
+                    login(usr_name, psw)
+
         elif mod == 'register':
             usr_name = input("Username: ")
-            psw = input('Password: ')
 
-            register(usr_name, psw)
+            if usr_name == 'exit':
+                f = False
+                print('Exited')
+            else:
+                psw = input('Password: ')
+
+                if not psw == 'exit':
+                    register(usr_name, psw)
+
         else:
-            print('Enter a Valid value: login or register')
-            send('!l')
-            f = False
+            if mod == 'exit':
+                f = False
+                send('!l')
+                print('Exited')
+            else:
+                print('Enter a Valid value: login or register')
+                send('!l')
+                f = False
 
 except Exception:
     send('!l')

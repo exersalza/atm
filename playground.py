@@ -1,8 +1,5 @@
-cocks = 'coggers'
+f = 'cogger'
+c = 'exit'
 
-
-def test(foo, bar):
-    print(foo + bar)
-
-
-print(test('foo', 'bar'))
+if f == 'exit' or c == 'exit':
+    print('cogfgers')
