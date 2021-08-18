@@ -79,7 +79,7 @@ try:
             else:
                 psw = input('Password: ')
 
-                if psw == 'exit':
+                if not psw == 'exit':
                     login(usr_name, psw)
 
         elif mod == 'register':
