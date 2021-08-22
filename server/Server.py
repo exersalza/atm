@@ -2,7 +2,6 @@ import socket
 import threading
 import os
 import platform
-import bcrypt
 
 from sql.sql_conn import mydb
 
@@ -21,6 +20,7 @@ elif platform == 'Linux':
 HEADER = 64
 PORT = 5050
 SERVER = socket.gethostbyname(socket.gethostname())
+# print(SERVER)
 ADDR = (SERVER, PORT)
 FORMAT = 'utf-8'
 DISCONNECT_MESSAGE = '!l'
@@ -29,8 +29,13 @@ server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind(ADDR)
 
 
+def login(name, fname, psw):
+
+    pass
+
+
 def handle_client(conn, addr):
-    print(f'\u001b[32m[NEW CONNECTION]\u001b[0m {addr} connected.\n')
+    print(f'\u001b[32m[NEW CONNECTION] {addr} connected.\n\u001b[0m')
 
     connected = True
     data = []
@@ -43,24 +48,22 @@ def handle_client(conn, addr):
             if msg == DISCONNECT_MESSAGE:
                 connected = False
                 data.clear()
-                threading.activeCount() - 1
+            else:
+                data.append(msg)
 
-                print(f'\u001b[31m[CLOSED CONNECTION]\u001b[0m {addr} disconnected.')
-            elif msg == 'login_redirect':
-                conn.send('logged in'.encode(FORMAT))
-            elif msg == 'register_redirect':
-                conn.send('registered'.encode(FORMAT))
+            print(f'[{addr}] {msg}, {data}')
+            conn.send('Msg received'.encode(FORMAT))
 
 
 def start():
     server.listen()
-    print(f'\u001b[34m[LISTENING]\u001b[0m Server is listening to {SERVER}')
+    print(f'\u001b[32m[LISTENING]\u001b[0m Server is listening to {SERVER}')
     while True:
         conn, addr = server.accept()
         thread = threading.Thread(target=handle_client, args=(conn, addr))
         thread.start()
-        print(f'[ACTIVE CONNECTIONS] {threading.activeCount() - 1}')
+        print(f'\u001b[34m[ACTIVE CONNECTIONS]\u001b[0m {threading.activeCount() - 1}')
 
 
-print('\u001b[32m[STARTING]\u001b[0m server is starting...')
+print('\u001b[33m[STARTING] server is starting...\u001b[0m')
 start()
