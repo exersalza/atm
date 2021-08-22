@@ -1,10 +1,20 @@
+import os.path
 import mysql.connector
+
+if os.path.isfile('config.py'):
+    from config import HOST, USER, PASSWORD, DB # kann man das so machen? ka funktioniert also alles gut! :)
+else:
+    HOST = 'localhost'
+    USER = 'root'
+    PASSWORD = ''
+    DB = 'atm'
 
 try:
     mydb = mysql.connector.connect(
-        host='localhost',
-        user='root',
-        database='atm'
+        host=HOST,
+        user=USER,
+        password=PASSWORD,
+        database=DB
     )
 except Exception as error:
     err = str(error)
