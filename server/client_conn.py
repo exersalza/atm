@@ -1,10 +1,9 @@
 import socket
 
+from server.etc.config import PORT, FORMAT, S_HOST
+
 HEADER = 64
-PORT = 5050
-SERVER = '127.0.1.1'
-ADDR = (SERVER, PORT)
-FORMAT = 'utf-8'
+ADDR = (S_HOST, int(PORT))
 DISCONNECT_MESSAGE = '!l'
 
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

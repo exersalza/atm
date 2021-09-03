@@ -1,8 +1,8 @@
 import os.path
 import mysql.connector
 
-if os.path.isfile('config.py'):
-    from config import HOST, USER, PASSWORD, DB # kann man das so machen? ka funktioniert also alles gut! :)
+if os.path.isfile('../etc/config.py'):
+    from server.etc.config import HOST, USER, PASSWORD, DB  # kann man das so machen? ka funktioniert also alles gut! :)
 else:
     HOST = 'localhost'
     USER = 'root'
@@ -16,21 +16,24 @@ try:
         password=PASSWORD,
         database=DB
     )
+
 except Exception as error:
     err = str(error)
     if '1049' in err:
         db_to_create = mysql.connector.connect(
-            host='localhost',
-            user='root'
+            host=HOST,
+            user=USER,
+            password=PASSWORD
         )
 
         cur = db_to_create.cursor()
         cur.execute('CREATE DATABASE atm')
 
         mydb = mysql.connector.connect(
-            host='localhost',
-            user='root',
-            database='atm'
+            host=HOST,
+            user=USER,
+            password=PASSWORD,
+            database=DB
         )
 
         cur = mydb.cursor()
