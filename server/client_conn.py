@@ -1,8 +1,7 @@
 import socket
 
-from server.etc.config import PORT, FORMAT, S_HOST
+from server.etc.config import PORT, FORMAT, S_HOST, HEADER
 
-HEADER = 64
 ADDR = (S_HOST, int(PORT))
 DISCONNECT_MESSAGE = '!l'
 
